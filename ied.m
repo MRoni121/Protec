@@ -134,6 +134,84 @@ legend('Normal','Filtrado PB', 'PB+Aperiodica');
 % (https://drive.google.com/file/d/1gqpuzEJbBnoEcdpN-3Jhix25CniElQAo/view - 19:54)
 % olhar também 1:10:00 para relatório - entender onde ocorreu o defeito
 
+close all;
+clear all;
+%
+% 1) Leitura de ajustes e configurações
+%
+f           = 60; 
+fa          = 960;
+tam_buffer  = 32;                   % Tamanho do buffer, em numero de amostras
+ponteiro_b = 1;                     % Ponteiro que é atualizado a cada posição de leitura
+tensao_lida = zeros(1, tam_buffer); % Buffer que armazena o sinal de tensão digitalizado
+corren_lida = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente digitalizado
+tempo_lido  = zeros(1, tam_buffer); % Buffer que armazena a referência de tempo
+tensao_nova = zeros(1, tam_buffer); % Buffer que armazena o sinal de tensão digitalizado e filtrado
+corren_nova = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente digitalizado e filtrado
+tempo_novo  = zeros(1, tam_buffer); % Buffer que armazena a referência de tempo
+
+%
+% 2) Loop infinito
+%
+aux = 1;
+while aux<=N_sint*num_ciclos
+%while aux<lenght(tempo)
+%while(1)
+    %
+    % 2.1) Leitura dos ADs
+    %
+        % 2.1.1) Atualização dos buffers circulares
+        tensao_lida(ponteiro_b) = tensao(aux);      %Atualização do buffer de tensão
+        corren_lida(ponteiro_b) = corren(aux);      %Atualização do buffer de corrente
+        tempo_lido(ponteiro_b)  = tempo(aux)        % Atualização do buffer de tmpo
+        ponteiro_b              = ponteiro_b + 1;   %Atualização do ponteiro dos buffers
+        if ponteiro_b>tam_buffer
+            ponteiro_b = 1;
+        end
+        figure(2)
+        hold on; 
+        grid on;
+        zoom on; 
+        plot(tempo_lido, tensao_lida); 
+        plot(tempo_lido, corren_lida); 
+        legend(‘vlida’, ‘ilida’)
+    %
+    % 2.2) Filtragem digital
+    %
+    % tensao_nova(ponteiro_b) = resample([tensao_lida(ponteiro_b:tam_buffer) tensao_lida(1:ponteiro_b-1)], fa, N_sint*f);
+    % corren_nova(ponteiro_b) = resample([corren_lida(ponteiro_b:tam_buffer) corren_lida(1:ponteiro_b-1)], fa, N_sint*f);
+    % tempo_novo(ponteiro_b)  = (aux-1)(N_sint*f)
+    %
+    % 2.3) Cálculo dos fasores
+    %
+    for cont = 1:32
+        if aux = 1
+        else
+            V(aux) = V(cont-1) + sqrt(2)/N_sint*
+            I(aux) = I(cont-1) + sqrt(2)/N_sint*
+        end
+    end
+
+    %
+    % 2.4) Funçoes de proteção
+    %
+    aux = aux + 1;
+end
+figure(2)
+hold on; 
+grid on;
+zoom on; 
+plot([tempo_lido(ponteiro_b:tam_buffer) tempo_lido(1:ponteiro_b-1)], [tensao_lida(ponteiro_b:tam_buffer) tensao_lida(1:ponteiro_b-1)]); 
+plot([tempo_lido(ponteiro_b:tam_buffer) tempo_lido(1:ponteiro_b-1)], [corren_lida(ponteiro_b:tam_buffer) corren_lida(1:ponteiro_b-1)]); 
+legend(‘vlida’, ‘ilida’)
+
+figure(3)
+hold on; 
+grid on;
+zoom on; 
+plot([tempo_novo(ponteiro_b:tam_buffer) tempo_novo(1:ponteiro_b-1)], [tensao_nova(ponteiro_b:tam_buffer) tensao_nova(1:ponteiro_b-1)]); 
+plot([tempo_novo(ponteiro_b:tam_buffer) tempo_novo(1:ponteiro_b-1)], [corren_nova(ponteiro_b:tam_buffer) corren_nova(1:ponteiro_b-1)]); 
+legend(‘vnova’, ‘inova’)
 
 %% ------------------------------------------------------------------------
 % 8) Impress�o dos c�lculos feitos pelos dois rel�s:
