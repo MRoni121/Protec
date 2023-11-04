@@ -19,6 +19,8 @@ L2030         = 1.5; %km
 I20           = 250; %corrente de carga na barra 
 I30           = 68;  %corrente de carga na barra 
 
+ta = Protecao('iec', 'B', 5, 2, 10);
+
 Imax102F = 6000;
 Imax103F = 4800;
 Imax102FT = 5300;
@@ -177,10 +179,10 @@ figure(1)
 hold on;
 zoom on;
 grid on;
-plot(tempo,iaL);
-plot(tempo,iaLf);
 plot(tempo,iaLfa);
-legend('Normal','Filtrado PB', 'PB+Aperiodica');
+plot(tempo,ibLfa);
+plot(tempo,icLfa);
+legend('iA','iB', 'iC');
 %% ------------------------------------------------------------------------
 % 5) C�lculo da prote��o de dist�ncia
 % -------------------------------------------------------------------------
