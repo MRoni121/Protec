@@ -66,6 +66,42 @@ icL    = sinais(1:end,4);
 iaR    = sinais(1:end,5);
 ibR    = sinais(1:end,6);
 icR    = sinais(1:end,7);
+
+
+% Transformando cada arquivo csv em matriz
+
+sinais_1_10 = csvread('A1rele10.csv');
+sinais_1_20 = csvread('A1rele20.csv');
+sinais_1_30 = csvread('A1rele30.csv');
+sinais_2_10 = csvread('A2rele10.csv');
+sinais_2_20 = csvread('A2rele20.csv');
+sinais_2_30 = csvread('A2rele30.csv');
+
+
+% Criando os vetores de tempo e corrente
+
+tempo = sinais_1_10(1:end, 1);
+Ia_1_10 = sinais_1_10(1:end, 2);
+Ib_1_10 = sinais_1_10(1:end, 3);
+Ic_1_10 = sinais_1_10(1:end, 4);
+Ia_1_20 = sinais_1_20(1:end, 2);
+Ib_1_20 = sinais_1_20(1:end, 3);
+Ic_1_20 = sinais_1_20(1:end, 4);
+Ia_1_30 = sinais_1_30(1:end, 2);
+Ib_1_30 = sinais_1_30(1:end, 3);
+Ic_1_30 = sinais_1_30(1:end, 4);
+Ia_2_10 = sinais_2_10(1:end, 2);
+Ib_2_10 = sinais_2_10(1:end, 3);
+Ic_2_10 = sinais_2_10(1:end, 4);
+Ia_2_20 = sinais_2_20(1:end, 2);
+Ib_2_20 = sinais_2_20(1:end, 3);
+Ic_2_20 = sinais_2_20(1:end, 4);
+Ia_2_30 = sinais_2_30(1:end, 2);
+Ib_2_30 = sinais_2_30(1:end, 3);
+Ic_2_30 = sinais_2_30(1:end, 4);
+
+
+
 % figure(1)
 % hold on;
 % zoom on;
@@ -98,6 +134,26 @@ icLf = Filtro_Analogico(0, icL, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
 iaRf = Filtro_Analogico(0, iaR, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
 ibRf = Filtro_Analogico(0, ibR, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
 icRf = Filtro_Analogico(0, icR, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+
+Ia_1_10_f = Filtro_Analogico(0, Ia_1_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_1_10_f = Filtro_Analogico(0, Ib_1_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_1_10_f = Filtro_Analogico(0, Ic_1_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ia_1_20_f = Filtro_Analogico(0, Ia_1_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_1_20_f = Filtro_Analogico(0, Ib_1_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_1_20_f = Filtro_Analogico(0, Ic_1_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ia_1_30_f = Filtro_Analogico(0, Ia_1_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_1_30_f = Filtro_Analogico(0, Ib_1_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_1_30_f = Filtro_Analogico(0, Ic_1_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ia_2_10_f = Filtro_Analogico(0, Ia_2_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_2_10_f = Filtro_Analogico(0, Ib_2_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_2_10_f = Filtro_Analogico(0, Ic_2_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ia_2_20_f = Filtro_Analogico(0, Ia_2_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_2_20_f = Filtro_Analogico(0, Ib_2_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_2_20_f = Filtro_Analogico(0, Ic_2_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ia_2_30_f = Filtro_Analogico(0, Ia_2_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_2_30_f = Filtro_Analogico(0, Ib_2_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_2_30_f = Filtro_Analogico(0, Ic_2_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+
 % figure(1)
 % hold on;
 % zoom on;
@@ -469,3 +525,4 @@ if imprime
     plot([0 elemen(num_elem,12).Rca],[0 elemen(num_elem,13).Xca], '--y')
    
 end
+
