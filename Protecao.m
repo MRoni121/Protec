@@ -1,4 +1,4 @@
-function [ta] = Protecao(curve_family,curve_type,ipk,mt, ifasor)
+function [ta] = Protecao(curve_family,curve_type,ipk,mt,ifasor)
 %                           |            |      |   | 
 %                           |            |      |   |
 %                           |            |      |   \_______ Multiplicador de tempo
