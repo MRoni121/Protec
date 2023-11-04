@@ -134,6 +134,26 @@ icLf = Filtro_Analogico(0, icL, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
 iaRf = Filtro_Analogico(0, iaR, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
 ibRf = Filtro_Analogico(0, ibR, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
 icRf = Filtro_Analogico(0, icR, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+
+Ia_1_10_f = Filtro_Analogico(0, Ia_1_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_1_10_f = Filtro_Analogico(0, Ib_1_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_1_10_f = Filtro_Analogico(0, Ic_1_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ia_1_20_f = Filtro_Analogico(0, Ia_1_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_1_20_f = Filtro_Analogico(0, Ib_1_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_1_20_f = Filtro_Analogico(0, Ic_1_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ia_1_30_f = Filtro_Analogico(0, Ia_1_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_1_30_f = Filtro_Analogico(0, Ib_1_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_1_30_f = Filtro_Analogico(0, Ic_1_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ia_2_10_f = Filtro_Analogico(0, Ia_2_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_2_10_f = Filtro_Analogico(0, Ib_2_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_2_10_f = Filtro_Analogico(0, Ic_2_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ia_2_20_f = Filtro_Analogico(0, Ia_2_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_2_20_f = Filtro_Analogico(0, Ib_2_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_2_20_f = Filtro_Analogico(0, Ic_2_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ia_2_30_f = Filtro_Analogico(0, Ia_2_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_2_30_f = Filtro_Analogico(0, Ib_2_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_2_30_f = Filtro_Analogico(0, Ic_2_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+
 % figure(1)
 % hold on;
 % zoom on;
