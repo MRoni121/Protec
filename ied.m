@@ -13,62 +13,16 @@ num_ciclo     = fa/f;               % N�mero de amostras por ciclo (valor que 
 Ts            = 1/fa;               % Per�odo de amostragem = Passo de integra��o do Simulink
 imprime = 0;
 
-% Dados específicos do grupo
-L1020         = 2;   %km 
-L2030         = 1.5; %km 
-I20           = 250; %corrente de carga na barra 
-I30           = 68;  %corrente de carga na barra 
-
-ta = Protecao('iec', 'B', 5, 2, 10);
-
-Imax102F = 6000;
-Imax103F = 4800;
-Imax102FT = 5300;
-Imax10FT = 5600;
-
-Imax202F = 4000;
-Imax203F = 2900;
-Imax202FT = 3600;
-Imax20FT = 2950;
-
-Imax302F = 3280;
-Imax303F = 2250;
-Imax302FT = 2950;
-Imax30FT = 3020;
-
-Imin102F = 790;
-Imin103F = 785;
-Imin102FT = 680;
-Imin10FT = 770;
-
-Imin202F = 780;
-Imin203F = 760;
-Imin202FT = 675;
-Imin20FT = 740;
-
-Imin302F = 600;
-Imin303F = 580;
-Imin302FT = 520;
-Imin30FT = 550;
+% parâmetros da função
+curve_family = 'iec'; %iec ||ieee
+curve_type = 'A'; % ext_inv || mui_inv || mod_inv || short_inv || A || B || C
+ipk = 3000;
+mt = 0.15;
+ifasor = 3;
 
 %% ------------------------------------------------------------------------
 % 3. Dados da simula��o
 % -------------------------------------------------------------------------
-
-% TODO - pegar os dados do arquivo CSV (confirmar qual CSV)
-% Funções readtable() e csvread() devem funcionar bem
-% csv tá em [t, ia, ib, ic] em valores primarios
-
-
-% ABC001_RED3840;
-% tempo  = sinais(1:end,1);
-% iaL    = sinais(1:end,2);
-% ibL    = sinais(1:end,3);
-% icL    = sinais(1:end,4);
-% iaR    = sinais(1:end,5);
-% ibR    = sinais(1:end,6);
-% icR    = sinais(1:end,7);
-
 
 % Transformando cada arquivo csv em matriz
 
@@ -101,6 +55,9 @@ Ia_2_30 = sinais_2_30(1:end, 2);
 Ib_2_30 = sinais_2_30(1:end, 3);
 Ic_2_30 = sinais_2_30(1:end, 4);
 
+for k = 1:length(tempo)
+  tempo(k) = (k-1)*Ts;
+end
 
 
 % figure(1)
@@ -132,66 +89,41 @@ Amin   = 32;       % Atenuacao fora da banda de passagem, [dB]
 % tempo = [0:(1/faorig):((length(sinais(:,1))-1)/faorig)];
 
 
-% Ia_1_10_f = Filtro_Analogico(1, Ia_1_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-% Ib_1_10_f = Filtro_Analogico(1, Ib_1_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-% Ic_1_10_f = Filtro_Analogico(1, Ic_1_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-% Ia_1_20_f = Filtro_Analogico(1, Ia_1_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-% Ib_1_20_f = Filtro_Analogico(1, Ib_1_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-% Ic_1_20_f = Filtro_Analogico(1, Ic_1_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-% Ia_1_30_f = Filtro_Analogico(1, Ia_1_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-% Ib_1_30_f = Filtro_Analogico(1, Ib_1_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-% Ic_1_30_f = Filtro_Analogico(1, Ic_1_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-% Ia_2_10_f = Filtro_Analogico(1, Ia_2_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-% Ib_2_10_f = Filtro_Analogico(1, Ib_2_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-% Ic_2_10_f = Filtro_Analogico(1, Ic_2_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-% Ia_2_20_f = Filtro_Analogico(1, Ia_2_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-% Ib_2_20_f = Filtro_Analogico(1, Ib_2_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-% Ic_2_20_f = Filtro_Analogico(1, Ic_2_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-% Ia_2_30_f = Filtro_Analogico(1, Ia_2_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-% Ib_2_30_f = Filtro_Analogico(1, Ib_2_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-% Ic_2_30_f = Filtro_Analogico(1, Ic_2_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ia_1_10_f = Filtro_Analogico(1, Ia_1_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_1_10_f = Filtro_Analogico(1, Ib_1_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_1_10_f = Filtro_Analogico(1, Ic_1_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ia_1_20_f = Filtro_Analogico(1, Ia_1_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_1_20_f = Filtro_Analogico(1, Ib_1_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_1_20_f = Filtro_Analogico(1, Ic_1_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ia_1_30_f = Filtro_Analogico(1, Ia_1_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_1_30_f = Filtro_Analogico(1, Ib_1_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_1_30_f = Filtro_Analogico(1, Ic_1_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ia_2_10_f = Filtro_Analogico(1, Ia_2_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_2_10_f = Filtro_Analogico(1, Ib_2_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_2_10_f = Filtro_Analogico(1, Ic_2_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ia_2_20_f = Filtro_Analogico(1, Ia_2_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_2_20_f = Filtro_Analogico(1, Ib_2_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_2_20_f = Filtro_Analogico(1, Ic_2_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ia_2_30_f = Filtro_Analogico(1, Ia_2_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_2_30_f = Filtro_Analogico(1, Ib_2_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_2_30_f = Filtro_Analogico(1, Ic_2_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
 
 % figure(1)
 % hold on;
 % zoom on;
 % grid on;
-% plot(tempo,iaL);
-% plot(tempo,iaLf);
+% plot(tempo,Ia_1_10);
+% plot(tempo,Ia_1_10_f);
 % legend('Normal','Filtrado');
-% -------------------------------------------------------------------------
-% 4.3) Filtro da componente aperiodica sintonizado em R/L do sistema
-% -------------------------------------------------------------------------
 
-Z1     = 0.045 + 1i*0.450;
-Z0     = 0.150 + 1i*1.500;
-alfaf  = real((1/3)*(2*Z1+Z0))/(imag((1/3)*(2*Z1+Z0))/(2*pi*f));
 
-% Ia_1_10_fa = Filtra_Aperiodica(alfaf, Ia_1_10_f, fa, num_ciclo)';
-% Ib_1_10_fa = Filtra_Aperiodica(alfaf, Ib_1_10_f, fa, num_ciclo)';
-% Ic_1_10_fa = Filtra_Aperiodica(alfaf, Ic_1_10_f, fa, num_ciclo)';
-% Ia_1_20_fa = Filtra_Aperiodica(alfaf, Ia_1_20_f, fa, num_ciclo)';
-% Ib_1_20_fa = Filtra_Aperiodica(alfaf, Ib_1_20_f, fa, num_ciclo)';
-% Ic_1_20_fa = Filtra_Aperiodica(alfaf, Ic_1_20_f, fa, num_ciclo)';
-% Ia_1_30_fa = Filtra_Aperiodica(alfaf, Ia_1_30_f, fa, num_ciclo)';
-% Ib_1_30_fa = Filtra_Aperiodica(alfaf, Ib_1_30_f, fa, num_ciclo)';
-% Ic_1_30_fa = Filtra_Aperiodica(alfaf, Ic_1_30_f, fa, num_ciclo)';
-% Ia_2_10_fa = Filtra_Aperiodica(alfaf, Ia_2_10_f, fa, num_ciclo)';
-% Ib_2_10_fa = Filtra_Aperiodica(alfaf, Ib_2_10_f, fa, num_ciclo)';
-% Ic_2_10_fa = Filtra_Aperiodica(alfaf, Ic_2_10_f, fa, num_ciclo)';
-% Ia_2_20_fa = Filtra_Aperiodica(alfaf, Ia_2_20_f, fa, num_ciclo)';
-% Ib_2_20_fa = Filtra_Aperiodica(alfaf, Ib_2_20_f, fa, num_ciclo)';
-% Ic_2_20_fa = Filtra_Aperiodica(alfaf, Ic_2_20_f, fa, num_ciclo)';
-% Ia_2_30_fa = Filtra_Aperiodica(alfaf, Ia_2_30_f, fa, num_ciclo)';
-% Ib_2_30_fa = Filtra_Aperiodica(alfaf, Ib_2_30_f, fa, num_ciclo)';
-% Ic_2_30_fa = Filtra_Aperiodica(alfaf, Ic_2_30_f, fa, num_ciclo)';
-
-hold on;
-zoom on;
-grid on;
-plot(tempo,Ia_2_30);
-plot(tempo,Ib_2_30);
-plot(tempo,Ic_2_30);
-legend('iA','iB', 'iC');
+% hold on;
+% zoom on;
+% grid on;
+% plot(tempo,Ia_2_30);
+% plot(tempo,Ib_2_30);
+% plot(tempo,Ic_2_30);
+% legend('iA','iB', 'iC');
 
 %% ------------------------------------------------------------------------
 % 5) Calculo da protecao de distancia
@@ -205,92 +137,106 @@ legend('iA','iB', 'iC');
 % close all;
 % clear all;
 %
+
 % 5.1) Implementação do buffer circular
 
-% tam_buffer  = 64;                   % Tamanho do buffer, em numero de amostras
-% ponteiro_b = 1;                     % Ponteiro que é atualizado a cada posição de leitura
-% ia_1_10_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ia da barra 10 digitalizado
-% ib_1_10_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ib da barra 10 digitalizado
-% ic_1_10_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ic da barra 10 digitalizado
-% ia_1_20_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ia da barra 20 digitalizado
-% ib_1_20_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ib da barra 20 digitalizado
-% ic_1_20_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ic da barra 20 digitalizado
-% ia_1_30_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ia da barra 30 digitalizado
-% ib_1_30_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ib da barra 30 digitalizado
-% ic_1_30_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ic da barra 30 digitalizado
-% ia_2_10_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ia da barra 10 digitalizado
-% ib_2_10_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ib da barra 10 digitalizado
-% ic_2_10_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ic da barra 10 digitalizado
-% ia_2_20_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ia da barra 20 digitalizado
-% ib_2_20_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ib da barra 20 digitalizado
-% ic_2_20_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ic da barra 20 digitalizado
-% ia_2_30_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ia da barra 30 digitalizado
-% ib_2_30_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ib da barra 30 digitalizado
-% ic_2_30_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ic da barra 30 digitalizado
-% tempo_lido  = zeros(1, tam_buffer); % Buffer que armazena a referência de tempo
-% tensao_nova = zeros(1, tam_buffer); % Buffer que armazena o sinal de tensão digitalizado e filtrado
-% corren_nova = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente digitalizado e filtrado
-% tempo_novo  = zeros(1, tam_buffer); % Buffer que armazena a referência de tempo
+tam_buffer  = 64;                   % Tamanho do buffer, em numero de amostras
+ponteiro_b = 1;                     % Ponteiro que é atualizado a cada posição de leitura
+ia_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ia da barra 10 digitalizado
+ib_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ib da barra 10 digitalizado
+ic_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ic da barra 10 digitalizado
+tempo_lido  = zeros(1, tam_buffer); % Buffer que armazena a referência de tempo
+corren_nova = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente digitalizado e filtrado
+tempo_novo  = zeros(1, tam_buffer); % Buffer que armazena a referência de tempo
+
 
 % %
 % % 2) Loop infinito
 % %
-% aux = 1;
+aux = 1;
+
+timer = 0;
+tempo_pro_trip = -1;
+
+instante_do_trip = 0;
+instante_de_percepcao = 0;
+tempo_pro_trip_estimado = 0;
+
+ia_fasores = zeros(1, length(tempo));
+ib_fasores = zeros(1, length(tempo));
+ic_fasores = zeros(1, length(tempo));
+Ia_super_fasores = zeros(1, length(tempo));
+
 % % 5.1.2) Leitura dos ADs
-% while aux<length(tempo)
+while aux<length(tempo)
 
 %     % 5.1.3) Atualização dos buffers circulares
-%     corren_lida(ponteiro_b) = corren(aux);      % Atualização do buffer de corrente
-%     tempo_lido(ponteiro_b)  = tempo(aux);       % Atualização do buffer de tempo
-%     ponteiro_b              = ponteiro_b + 1;   % Atualização do ponteiro dos buffers
-%     if ponteiro_b>tam_buffer
-%         ponteiro_b = 1;
-%     end
+    ia_dig(ponteiro_b) = Ia_1_10_f(aux);
+    ib_dig(ponteiro_b) = Ib_1_10_f(aux);
+    ic_dig(ponteiro_b) = Ic_1_10_f(aux);
+    tempo_lido(ponteiro_b)  = tempo(aux);       % Atualização do buffer de tempo
 
-%     figure(2)
-%     hold on; 
-%     grid on;
-%     zoom on; 
-%     plot(tempo_lido, corren_lida); 
-%     legend('ilida')
+
+% faz fourier
+
+    ia_ordenada = [ia_dig(ponteiro_b:tam_buffer) ia_dig(1:ponteiro_b-1)];
+    ib_ordenada = [ib_dig(ponteiro_b:tam_buffer) ib_dig(1:ponteiro_b-1)];
+    ic_ordenada = [ic_dig(ponteiro_b:tam_buffer) ic_dig(1:ponteiro_b-1)];
+
+    ia_fasores(aux) = fourier(ia_ordenada, tam_buffer, fa, f).magnitude;
+    ib_fasores(aux) = fourier(ib_ordenada, tam_buffer, fa, f).magnitude;
+    ic_fasores(aux) = fourier(ic_ordenada, tam_buffer, fa, f).magnitude;
+
+    Ia_super_fasores(aux) = fourier(Ia_1_10_f, aux, fa, f).magnitude;
+
+
+% chama Protecao
+    array_tempos = [Protecao(curve_family, curve_type, ipk, mt, ia_fasores(aux)) Protecao(curve_family, curve_type, ipk, mt, ib_fasores(aux)) Protecao(curve_family, curve_type, ipk, mt, ic_fasores(aux))];
+    tempo_pro_trip = min(array_tempos(array_tempos > 0));
+   
+
+    if(tempo_pro_trip > 0) 
+        
+        if(instante_de_percepcao == 0)
+            instante_de_percepcao = tempo(aux);
+        end
+        
+        if(timer > tempo_pro_trip)
+            instante_do_trip = tempo(aux);
+            tempo_pro_trip_estimado = tempo_pro_trip;
+            break;
+        end
+
+        timer = timer + Ts;
+
+    else
+        timer = max([0 timer-Ts]);
+    end
+
+
+    ponteiro_b = ponteiro_b + 1;   % Atualização do ponteiro dos buffers
+
+    if ponteiro_b>tam_buffer
+        ponteiro_b = 1;
+    end
     
-%     %
-%     % 2.2) Filtragem digital (já vamos ter a analógica?)
-%     %
-%     % corren_nova(ponteiro_b) = resample([corren_lida(ponteiro_b:tam_buffer) corren_lida(1:ponteiro_b-1)], fa, N_sint*f);
-%     % tempo_novo(ponteiro_b)  = (aux-1)(N_sint*f)
-%     %
+   
+    %
+    % 2.4) Funçoes de proteção
+    %
+    aux = aux + 1;
+end
 
-%     % 2.3) Cálculo dos fasores
-%     %
+figure(1)
+hold on;
+zoom on;
+grid on;
+plot(tempo,Ia_1_10_f);
+% plot(tempo,ia_fasores);
+plot(tempo,Ia_super_fasores);
+legend('sinal', 'fourier grandao');
 
-    
 
-%     for cont = 1:tam_buffer
-%         if aux == 1
-%         else
-%             I(aux) = I(cont-1) + sqrt(2)/N_sint*
-%         end
-%     end
-
-%     %
-%     % 2.4) Funçoes de proteção
-%     %
-%     aux = aux + 1;
-% end
-% figure(2)
-% hold on; 
-% grid on;
-% zoom on; 
-% plot([tempo_lido(ponteiro_b:tam_buffer) tempo_lido(1:ponteiro_b-1)], [corren_lida(ponteiro_b:tam_buffer) corren_lida(1:ponteiro_b-1)]); 
-% %legend(#vlida%, ‘ilida’)
-
-% figure(3)
-% hold on; 
-% grid on;
-% zoom on; 
-% plot([tempo_novo(ponteiro_b:tam_buffer) tempo_novo(1:ponteiro_b-1)], [corren_nova(ponteiro_b:tam_buffer) corren_nova(1:ponteiro_b-1)]); 
-% %legend(%vnova’, ‘inova’)
 
 % %% ------------------------------------------------------------------------
 % % 8) Impress�o dos c�lculos feitos pelos dois rel�s:
