@@ -16,8 +16,8 @@ imprime = 0;
 % parâmetros da função
 curve_family = 'iec'; %iec ||ieee
 curve_type = 'A'; % ext_inv || mui_inv || mod_inv || short_inv || A || B || C
-ipk = 3000;
-mt = 0.15;
+ipk = 1000;
+mt = 0.01;
 ifasor = 3;
 
 %% ------------------------------------------------------------------------
@@ -161,6 +161,7 @@ tempo_pro_trip = -1;
 instante_do_trip = 0;
 instante_de_percepcao = 0;
 tempo_pro_trip_estimado = 0;
+deveria_atualizar = 1;
 
 ia_fasores = zeros(1, length(tempo));
 ib_fasores = zeros(1, length(tempo));
@@ -195,7 +196,7 @@ while aux<length(tempo)
     tempo_pro_trip = min(array_tempos(array_tempos > 0));
    
 
-    if(tempo_pro_trip > 0) 
+    if(tempo_pro_trip > 0 & deveria_atualizar) 
         
         if(instante_de_percepcao == 0)
             instante_de_percepcao = tempo(aux);
@@ -204,7 +205,8 @@ while aux<length(tempo)
         if(timer > tempo_pro_trip)
             instante_do_trip = tempo(aux);
             tempo_pro_trip_estimado = tempo_pro_trip;
-            break;
+            deveria_atualizar = 0;
+            
         end
 
         timer = timer + Ts;
@@ -232,9 +234,13 @@ hold on;
 zoom on;
 grid on;
 plot(tempo,Ia_1_10_f);
-% plot(tempo,ia_fasores);
-plot(tempo,Ia_super_fasores);
-legend('sinal', 'fourier grandao');
+plot(tempo,ia_fasores);
+
+plot([instante_de_percepcao, instante_de_percepcao], ylim, 'black--');
+plot([instante_do_trip, instante_do_trip], ylim, 'r--');
+
+legend('sinal', 'fourier', 'instante de percepcao da falta','instante do trip');
+
 
 
 
