@@ -8,7 +8,7 @@ clear all;     % Limpa todas as vari�veis do workspace
 % 2. Dados iniciais
 % -------------------------------------------------------------------------
 f             = 60;                 % 1 ciclo tem 60 Hz
-fa            = 3840;               % Frequ�ncia de amostragem dos casos de simula��o do ATP
+fa            = 1920;               % Frequ�ncia de amostragem dos casos de simula��o do ATP
 num_ciclo     = fa/f;               % N�mero de amostras por ciclo (valor que pode ser fracion�rio)
 Ts            = 1/fa;               % Per�odo de amostragem = Passo de integra��o do Simulink
 imprime = 0;
