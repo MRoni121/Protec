@@ -1,24 +1,23 @@
 %% ------------------------------------------------------------------------
 % 0) Profilaxia do MATLAB
 % -------------------------------------------------------------------------
-close all;     % Fecha todas as janelas de gr�ficos abertas
+close all;     % Fecha todas as janelas de graficos abertas
 fclose all;    % Fecha todos os ponteiros (escrita/leitura)
-clear all;     % Limpa todas as vari�veis do workspace
+clear all;     % Limpa todas as variaveis do workspace
 %% ------------------------------------------------------------------------
 % 2. Dados iniciais
 % -------------------------------------------------------------------------
 f             = 60;                 % 1 ciclo tem 60 Hz
-fa            = 1920;               % Frequ�ncia de amostragem dos casos de simula��o do ATP
-num_ciclo     = fa/f;               % N�mero de amostras por ciclo (valor que pode ser fracion�rio)
-Ts            = 1/fa;               % Per�odo de amostragem = Passo de integra��o do Simulink
+fa            = 1920;               % Frequência de amostragem dos casos de simulação do ATP
+num_ciclo     = fa/f;               % Número de amostras por ciclo (valor que pode ser fracionário)
+Ts            = 1/fa;               % Período de amostragem = Passo de integração do Simulink
 imprime = 0;
 
 % parâmetros da função
-curve_family = 'iec'; %iec ||ieee
-curve_type = 'A'; % ext_inv || mui_inv || mod_inv || short_inv || A || B || C
-ipk = 1000;
-mt = 0.01;
-ifasor = 3;
+curve_family = 'ieee'; %iec ||ieee
+curve_type = 'mui_inv'; % ext_inv || mui_inv || mod_inv || short_inv || A || B || C
+ipk = 9.48125*80;
+mt = 1;
 
 %% ------------------------------------------------------------------------
 % 3. Dados da simula��o
@@ -142,17 +141,15 @@ Ic_2_30_f = Filtro_Analogico(1, Ic_2_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
 
 tam_buffer  = 64;                   % Tamanho do buffer, em numero de amostras
 ponteiro_b = 1;                     % Ponteiro que é atualizado a cada posição de leitura
-ia_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ia da barra 10 digitalizado
-ib_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ib da barra 10 digitalizado
-ic_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ic da barra 10 digitalizado
+ia_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ia
+ib_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ib
+ic_dig = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente ic
 tempo_lido  = zeros(1, tam_buffer); % Buffer que armazena a referência de tempo
 corren_nova = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente digitalizado e filtrado
 tempo_novo  = zeros(1, tam_buffer); % Buffer que armazena a referência de tempo
 
 
-% %
-% % 2) Loop infinito
-% %
+
 aux = 1;
 
 timer = 0;
@@ -168,18 +165,17 @@ ib_fasores = zeros(1, length(tempo));
 ic_fasores = zeros(1, length(tempo));
 Ia_super_fasores = zeros(1, length(tempo));
 
-% % 5.1.2) Leitura dos ADs
+% % 5.2) Leitura dos ADs
 while aux<length(tempo)
 
-%     % 5.1.3) Atualização dos buffers circulares
+%   5.2.3) Atualização dos buffers circulares
     ia_dig(ponteiro_b) = Ia_1_10_f(aux);
     ib_dig(ponteiro_b) = Ib_1_10_f(aux);
     ic_dig(ponteiro_b) = Ic_1_10_f(aux);
     tempo_lido(ponteiro_b)  = tempo(aux);       % Atualização do buffer de tempo
 
 
-% faz fourier
-
+%   5.2.4) Cálculo dos fasores
     ia_ordenada = [ia_dig(ponteiro_b:tam_buffer) ia_dig(1:ponteiro_b-1)];
     ib_ordenada = [ib_dig(ponteiro_b:tam_buffer) ib_dig(1:ponteiro_b-1)];
     ic_ordenada = [ic_dig(ponteiro_b:tam_buffer) ic_dig(1:ponteiro_b-1)];
@@ -191,8 +187,13 @@ while aux<length(tempo)
     Ia_super_fasores(aux) = fourier(Ia_1_10_f, aux, fa, f).magnitude;
 
 
-% chama Protecao
-    array_tempos = [Protecao(curve_family, curve_type, ipk, mt, ia_fasores(aux)) Protecao(curve_family, curve_type, ipk, mt, ib_fasores(aux)) Protecao(curve_family, curve_type, ipk, mt, ic_fasores(aux))];
+%   5.2.5) Cálculo do menor tempo de atuação dentre os três fasores
+    array_tempos = [
+        Protecao(curve_family, curve_type, ipk, mt, ia_fasores(aux)) 
+        Protecao(curve_family, curve_type, ipk, mt, ib_fasores(aux)) 
+        Protecao(curve_family, curve_type, ipk, mt, ic_fasores(aux))
+    ];
+    
     tempo_pro_trip = min(array_tempos(array_tempos > 0));
    
 
@@ -222,10 +223,6 @@ while aux<length(tempo)
         ponteiro_b = 1;
     end
     
-   
-    %
-    % 2.4) Funçoes de proteção
-    %
     aux = aux + 1;
 end
 
