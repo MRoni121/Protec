@@ -1,3 +1,10 @@
+% PEA3416, PEA3424 e PEA5729 - Disciplinas de Proteção de Sistemas Elétricos (2023) - ATIVIDADE 2
+% GRUPO 1
+% André Lima Alambert               - 11857917
+% Davor Kapor Pereira               - 11804702
+% Mateus Roni Noronha de Carvalho   - 11805294
+% Pedro Kaltenbacher Ruiz           - 11914685
+
 %% ------------------------------------------------------------------------
 % 0) Profilaxia do MATLAB
 % -------------------------------------------------------------------------
