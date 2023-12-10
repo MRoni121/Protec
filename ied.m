@@ -325,7 +325,7 @@ grid;
 subplot(2, 2, 2);
 plot(tempo, Vb_f,'g');
 hold on
-plot(tempo, [ib_fasores.magnitude],'k');
+plot(tempo, [vb_fasores.magnitude],'k');
 title(["Tensão da Fase B do arquivo " arquivo]);
 ylabel("Vb [V]");
 xlabel("Tempo [s]");
@@ -335,7 +335,7 @@ grid;
 subplot(2, 2, 3);
 plot(tempo, Vc_f,'b');
 hold on
-plot(tempo, [ic_fasores.magnitude],'k');
+plot(tempo, [vc_fasores.magnitude],'k');
 title(["Tensão da Fase C do arquivo " arquivo]);
 ylabel("Vc [V]");
 xlabel("Tempo [s]");
