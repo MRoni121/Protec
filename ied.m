@@ -19,7 +19,7 @@ T = [1 1 1; 1 alfa*alfa alfa; 1 alfa alfa*alfa];
 
 % Parâmetros da função
 IopMin = 6;  % 120% da corrente nominal dos TCs
-k = 0.5;
+k = 0.5;     % Vide slides
 
 %% ------------------------------------------------------------------------
 % 3. Dados da simulação
