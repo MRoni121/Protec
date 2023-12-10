@@ -48,9 +48,9 @@ Vb = matriz(1:end, 6);
 Vc = matriz(1:end, 7);
 TRIP = matriz(1:end, 8);
 
-% for i = 1:length(tempo)
-%   tempo(i) = (i-1)*Ts;
-% end
+for i = 1:length(tempo)
+  tempo(i) = (i-1)*Ts;
+end
 
 
 %% ------------------------------------------------------------------------
@@ -261,166 +261,112 @@ end
 %% ------------------------------------------------------------------------
 % 6) Impressões
 % -------------------------------------------------------------------------
+ineutro = Ia_f + Ib_f + Ic_f;
 
-% 6.1) Valores de fase locais
+% 6.1) Correntes de linha filtradas
 
-% figure;
-% subplot(2, 2, 1);
-% plot(tempo, Ia_local_f,'r');
-% hold on
-% plot(tempo, [ia_local_fasores.magnitude],'k');
-% title(["Fase A Local do arquivo " arquivo]);
-% ylabel("Ia_{local} [A]");
-% xlabel("Tempo [s]");
-% legend('Corrente filtrada', 'Módulo do fasor calculado')
-% grid;
+figure;
+subplot(2, 2, 1);
+plot(tempo, Ia_f,'r');
+hold on
+plot(tempo, [ia_fasores.magnitude],'k');
+title(["Corrente da Fase A do arquivo " arquivo]);
+ylabel("Ia [A]");
+xlabel("Tempo [s]");
+legend('Corrente filtrada', 'Módulo do fasor calculado')
+grid;
 
-% subplot(2, 2, 2);
-% plot(tempo, Ib_local_f,'g');
-% hold on
-% plot(tempo, [ib_local_fasores.magnitude],'k');
-% title(["Fase B Local do arquivo " arquivo]);
-% ylabel("Ib_{local} [A]");
-% xlabel("Tempo [s]");
-% legend('Corrente filtrada', 'Módulo do fasor calculado')
-% grid;
+subplot(2, 2, 2);
+plot(tempo, Ib_f,'g');
+hold on
+plot(tempo, [ib_fasores.magnitude],'k');
+title(["Corrente da Fase B do arquivo " arquivo]);
+ylabel("Ib [A]");
+xlabel("Tempo [s]");
+legend('Corrente filtrada', 'Módulo do fasor calculado')
+grid;
 
-% subplot(2, 2, 3);
-% plot(tempo, Ic_local_f,'b');
-% hold on
-% plot(tempo, [ic_local_fasores.magnitude],'k');
-% title(["Fase C Local do arquivo " arquivo]);
-% ylabel("Ic_{local} [A]");
-% xlabel("Tempo [s]");
-% legend('Corrente filtrada', 'Módulo do fasor calculado')
-% grid;
+subplot(2, 2, 3);
+plot(tempo, Ic_f,'b');
+hold on
+plot(tempo, [ic_fasores.magnitude],'k');
+title(["Corrente da Fase C do arquivo " arquivo]);
+ylabel("Ic [A]");
+xlabel("Tempo [s]");
+legend('Corrente filtrada', 'Módulo do fasor calculado')
+grid;
 
-% subplot(2, 2, 4);
-% plot(tempo, neutro_local);
-% title(["Corrente de neutro local do arquivo " arquivo]);
-% ylabel("Ineutro_{local} [A]");
-% xlabel("Tempo [s]");
-% legend('Corrente filtrada')
-% grid;
+subplot(2, 2, 4);
+plot(tempo, ineutro);
+title(["Corrente de neutro do arquivo " arquivo]);
+ylabel("I Neutro [A]");
+xlabel("Tempo [s]");
+grid;
 
 % % 6.2) Valores de fase remotos
+figure;
+subplot(2, 2, 1);
+plot(tempo, Va_f,'r');
+hold on
+plot(tempo, [va_fasores.magnitude],'k');
+title(["Tensão da Fase A do arquivo " arquivo]);
+ylabel("Va [V]");
+xlabel("Tempo [s]");
+legend('Tensão filtrada', 'Módulo do fasor calculado')
+grid;
 
-% neutro_remoto = Ia_remoto_f + Ib_remoto_f + Ic_remoto_f;
-% figure;
-% subplot(2, 2, 1);
-% plot(tempo, Ia_remoto_f,'r');
-% hold on
-% plot(tempo, [ia_remoto_fasores.magnitude],'k');
-% title(["Fase A remoto do arquivo " arquivo]);
-% ylabel("Ia_{remoto} [A]");
-% xlabel("Tempo [s]");
-% legend('Corrente filtrada', 'Módulo do fasor calculado')
-% grid;
+subplot(2, 2, 2);
+plot(tempo, Vb_f,'g');
+hold on
+plot(tempo, [ib_fasores.magnitude],'k');
+title(["Tensão da Fase B do arquivo " arquivo]);
+ylabel("Vb [V]");
+xlabel("Tempo [s]");
+legend('Tensão filtrada', 'Módulo do fasor calculado')
+grid;
 
-% subplot(2, 2, 2);
-% plot(tempo, Ib_remoto_f,'g');
-% hold on
-% plot(tempo, [ib_remoto_fasores.magnitude],'k');
-% title(["Fase B remoto do arquivo " arquivo]);
-% ylabel("Ib_{remoto} [A]");
-% xlabel("Tempo [s]");
-% legend('Corrente filtrada', 'Módulo do fasor calculado')
-% grid;
+subplot(2, 2, 3);
+plot(tempo, Vc_f,'b');
+hold on
+plot(tempo, [ic_fasores.magnitude],'k');
+title(["Tensão da Fase C do arquivo " arquivo]);
+ylabel("Vc [V]");
+xlabel("Tempo [s]");
+legend('Tensão filtrada', 'Módulo do fasor calculado')
+grid;
 
-% subplot(2, 2, 3);
-% plot(tempo, Ic_remoto_f,'b');
-% hold on
-% plot(tempo, [ic_remoto_fasores.magnitude],'k');
-% title(["Fase C remoto do arquivo " arquivo]);
-% ylabel("Ic_{remoto} [A]");
-% xlabel("Tempo [s]");
-% legend('Corrente filtrada', 'Módulo do fasor calculado')
-% grid;
-
-% subplot(2, 2, 4);
-% plot(tempo, neutro_remoto);
-% title(["Corrente de neutro remoto do arquivo " arquivo]);
-% ylabel("Ineutro_{remoto} [A]");
-% xlabel("Tempo [s]");
-% legend('Corrente filtrada')
-% grid;
-
-% % 6.3) Componentes simétricas locais
-% figure;
-% subplot(3, 1, 1);
-% plot(tempo, [abs(izero_local)],'r');
-% title(["Magnitude da Seq. zero Local do arquivo " arquivo]);
-% ylabel("I zero_{local} [A]");
-% xlabel("Tempo [s]");
-% grid;
-
-% subplot(3, 1, 2);
-% plot(tempo, [abs(ipos_local)],'g');
-% title(["Magnitude da Seq. positiva Local do arquivo " arquivo]);
-% ylabel("I positiva_{local} [A]");
-% xlabel("Tempo [s]");
-% grid;
-
-% subplot(3, 1, 3);
-% plot(tempo, [abs(ineg_local)],'b');
-% title(["Magnitude da Seq. negativa Local do arquivo " arquivo]);
-% ylabel("I negativa_{local} [A]");
-% xlabel("Tempo [s]");
-% grid;
-
-% % 6.3) Componentes simétricas remotas
-% figure;
-% subplot(3, 1, 1);
-% plot(tempo, [abs(izero_remoto)],'r');
-% title(["Magnitude da Seq. zero remoto do arquivo " arquivo]);
-% ylabel("I zero_{remoto} [A]");
-% xlabel("Tempo [s]");
-% grid;
-
-% subplot(3, 1, 2);
-% plot(tempo, [abs(ipos_remoto)],'g');
-% title(["Magnitude da Seq. positiva remoto do arquivo " arquivo]);
-% ylabel("I positiva_{remoto} [A]");
-% xlabel("Tempo [s]");
-% grid;
-
-% subplot(3, 1, 3);
-% plot(tempo, [abs(ineg_remoto)],'b');
-% title(["Magnitude da Seq. negativa remoto do arquivo " arquivo]);
-% ylabel("I negativa_{remoto} [A]");
-% xlabel("Tempo [s]");
-% grid;
+% 6.3) Sinais de trip de fase
+  figure;
+  subplot(3, 1, 1);
+  plot(sinal_trip_a,'r');
+  hold on
+  title(["Trip A - " arquivo]);
 
 
-% % 6.4) Sinais de trip e atuação
-% figure;
-% subplot(3, 1, 1);
-% hold on;
-% plot(tempo, sinal_trip_zero,'r');
-% plot([instante_do_trip_zero, instante_do_trip_zero], ylim, 'r--');
-% title(["Atuação do Relé para Seq. Zero do arquivo " arquivo]);
-% ylabel("Nível");
-% xlabel("Tempo [s]");
-% legend('Nível do sinal de trip', 'Instante de atuação');
-% grid;
+  subplot(3, 1, 2);
+  plot(sinal_trip_b,'g');
+  hold on
+  title(["Trip B - " arquivo]);
 
-% subplot(3, 1, 2);
-% hold on;
-% plot(tempo, sinal_trip_pos,'g');
-% plot([instante_do_trip_pos, instante_do_trip_pos], ylim, 'r--');
-% title(["Atuação do Relé para Seq. Positiva do arquivo " arquivo]);
-% ylabel("Nível");
-% xlabel("Tempo [s]");
-% legend('Nível do sinal de trip', 'Instante de atuação');
-% grid;
+  subplot(3, 1, 3);
+  plot(sinal_trip_c,'b');
+  hold on
+  title(["Trip C - " arquivo]);
 
-% subplot(3, 1, 3);
-% hold on;
-% plot(tempo, sinal_trip_neg,'b');
-% plot([instante_do_trip_neg, instante_do_trip_neg], ylim, 'r--');
-% title(["Atuação do Relé para Seq. Negativa do arquivo " arquivo]);
-% ylabel("Nível");
-% xlabel("Tempo [s]");
-% legend('Nível do sinal de trip', 'Instante de atuação');
-% grid;
+% 6.4) Sinais de trip de linha
+  figure;
+  subplot(3, 1, 1);
+  plot(sinal_trip_ab,'r');
+  hold on
+  title(["Trip AB - " arquivo]);
 
+
+  subplot(3, 1, 2);
+  plot(sinal_trip_bc,'g');
+  hold on
+  title(["Trip BC - " arquivo]);
+
+  subplot(3, 1, 3);
+  plot(sinal_trip_ca,'b');
+  hold on
+  title(["Trip CA - " arquivo]);
