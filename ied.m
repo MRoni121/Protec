@@ -94,29 +94,6 @@ Ib_2_30_f = Filtro_Analogico(1, Ib_2_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
 Ic_2_30_f = Filtro_Analogico(1, Ic_2_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
 
 
-figure(1)
-hold on;
-zoom on;
-grid on;
-plot(tempo,Ia_1_10);
-plot(tempo,Ib_1_10);
-plot(tempo,Ic_1_10);
-legend('iA','iB', 'iC');
-title(["Correntes de linha das três fases na barra 10"]);
-ylabel("Corrente [A]");
-xlabel("Tempo (s)");
-
-figure(2)
-hold on;
-zoom on;
-grid on;
-plot(tempo,Ia_1_10);
-plot(tempo,Ia_1_10_f);
-legend('Normal','Filtrado');
-title(["Corrente de linha da fase A na barra 10 após filtragem analógica"]);
-ylabel("Corrente [A]");
-xlabel("Tempo (s)");
-
 
 %% ------------------------------------------------------------------------
 % 5) Calculo da protecao de sobrecorrente
@@ -134,17 +111,42 @@ tempo_lido  = zeros(1, tam_buffer); % Buffer que armazena a referência de tempo
 
 aux = 1;
 
-timer = 0;
+timer_a = 0;
+timer_b = 0;
+timer_c = 0;
+timer_n = 0;
 tempo_pro_trip = -1;
 
-instante_do_trip = 0;
-instante_de_percepcao = 0;
-tempo_pro_trip_estimado = 0;
-deveria_atualizar = 1;
+instante_do_trip_a = 0;
+instante_do_trip_b = 0;
+instante_do_trip_c = 0;
+instante_do_trip_n = 0;
+
+instante_de_percepcao_a = 0;
+instante_de_percepcao_b = 0;
+instante_de_percepcao_c = 0;
+instante_de_percepcao_n = 0;
+
+tempo_pro_trip_estimado_a = 0;
+tempo_pro_trip_estimado_b = 0;
+tempo_pro_trip_estimado_c = 0;
+tempo_pro_trip_estimado_n = 0;
+
+
+deveria_atualizar_a = 1;
+deveria_atualizar_b = 1;
+deveria_atualizar_c = 1;
+deveria_atualizar_n = 1;
+
+sinal_trip_a = zeros(1, length(tempo));
+sinal_trip_b = zeros(1, length(tempo));
+sinal_trip_c = zeros(1, length(tempo));
+sinal_trip_n = zeros(1, length(tempo));
 
 ia_fasores = zeros(1, length(tempo));
 ib_fasores = zeros(1, length(tempo));
 ic_fasores = zeros(1, length(tempo));
+in_fasores = zeros(1, length(tempo));
 
 % % 5.2) Leitura dos ADs
 while aux<length(tempo)
@@ -160,43 +162,118 @@ while aux<length(tempo)
     ia_ordenada = [ia_dig(ponteiro_b:tam_buffer) ia_dig(1:ponteiro_b-1)];
     ib_ordenada = [ib_dig(ponteiro_b:tam_buffer) ib_dig(1:ponteiro_b-1)];
     ic_ordenada = [ic_dig(ponteiro_b:tam_buffer) ic_dig(1:ponteiro_b-1)];
+    in_ordenada = ia_ordenada + ib_ordenada + ic_ordenada;
 
     ia_fasores(aux) = fourier(ia_ordenada, tam_buffer, fa, f).magnitude;
     ib_fasores(aux) = fourier(ib_ordenada, tam_buffer, fa, f).magnitude;
     ic_fasores(aux) = fourier(ic_ordenada, tam_buffer, fa, f).magnitude;
+    in_fasores(aux) = fourier(in_ordenada, tam_buffer, fa, f).magnitude;
 
-    Ia_super_fasores(aux) = fourier(Ia_1_10_f, aux, fa, f).magnitude;
 
-
-%   5.2.5) Cálculo do menor tempo de atuação dentre os três fasores
-    array_tempos = [
-        Protecao(curve_family, curve_type, ipk, mt, ia_fasores(aux)) 
-        Protecao(curve_family, curve_type, ipk, mt, ib_fasores(aux)) 
-        Protecao(curve_family, curve_type, ipk, mt, ic_fasores(aux))
-    ];
+%   5.2.5) Cálculo dos tempos de atuação
     
-    tempo_pro_trip = min(array_tempos(array_tempos > 0));
-   
-
-    if(tempo_pro_trip > 0 & deveria_atualizar) 
-        
-        if(instante_de_percepcao == 0)
-            instante_de_percepcao = tempo(aux);
+    ta_a = Protecao(curve_family, curve_type, ipk, mt, ia_fasores(aux)); 
+    ta_b = Protecao(curve_family, curve_type, ipk, mt, ib_fasores(aux));
+    ta_c = Protecao(curve_family, curve_type, ipk, mt, ic_fasores(aux));
+    ta_n = Protecao(curve_family, curve_type, ipk, mt, in_fasores(aux));
+    
+    
+%   Fase A
+    if(ta_a > 0) 
+        sinal_trip_a(aux) = 1;
+        if(instante_de_percepcao_a == 0)
+            instante_de_percepcao_a = tempo(aux);
         end
         
-        if(timer > tempo_pro_trip)
-            instante_do_trip = tempo(aux);
-            tempo_pro_trip_estimado = tempo_pro_trip;
-            deveria_atualizar = 0;
+        if(timer_a > ta_a)
+            
+            if(deveria_atualizar_a)
+                instante_do_trip_a = tempo(aux);
+                tempo_pro_trip_estimado_a = ta_a;
+            end
+            
+            deveria_atualizar_a = 0;
             
         end
 
-        timer = timer + Ts;
+        timer_a = timer_a + Ts;
 
     else
-        timer = max([0 timer-Ts]);
+        timer_a = max([0 timer_a-Ts]);
     end
 
+%   Fase B
+    if(ta_b > 0) 
+        sinal_trip_b(aux) = 1;
+        if(instante_de_percepcao_b == 0)
+            instante_de_percepcao_b = tempo(aux);
+        end
+        
+        if(timer_b > ta_b)
+            
+            if(deveria_atualizar_b)
+                instante_do_trip_b = tempo(aux);
+                tempo_pro_trip_estimado_b = ta_b;
+            end
+            
+            deveria_atualizar_b = 0;
+            
+        end
+
+        timer_b = timer_b + Ts;
+
+    else
+        timer_b = max([0 timer_b-Ts]);
+    end
+
+
+%   Fase C
+    if(ta_c > 0) 
+        sinal_trip_c(aux) = 1;
+        if(instante_de_percepcao_c == 0)
+            instante_de_percepcao_c = tempo(aux);
+        end
+        
+        if(timer_c > ta_c)
+            
+            if(deveria_atualizar_c)
+                instante_do_trip_c = tempo(aux);
+                tempo_pro_trip_estimado_c = ta_c;
+            end
+            
+            deveria_atualizar_c = 0;
+            
+        end
+
+        timer_c = timer_c + Ts;
+
+    else
+        timer_c = max([0 timer_c-Ts]);
+    end
+
+%   Neutro
+    if(ta_n > 0) 
+        sinal_trip_n(aux) = 1;
+        if(instante_de_percepcao_n == 0)
+            instante_de_percepcao_n = tempo(aux);
+        end
+        
+        if(timer_n > ta_n)
+            
+            if(deveria_atualizar_n)
+                instante_do_trip_n = tempo(aux);
+                tempo_pro_trip_estimado_n = ta_n;
+            end
+            
+            deveria_atualizar_n = 0;
+            
+        end
+
+        timer_n = timer_n + Ts;
+
+    else
+        timer_n = max([0 timer_n-Ts]);
+    end
 
     ponteiro_b = ponteiro_b + 1;   % Atualização do ponteiro dos buffers
 
@@ -207,18 +284,141 @@ while aux<length(tempo)
     aux = aux + 1;
 end
 
-figure(3)
+%% ------------------------------------------------------------------------
+% 6) Impressões
+% -------------------------------------------------------------------------
+
+iNeutro = Ia_1_10 + Ib_1_10 + Ic_1_10;
+
+figure;
+hold on;
+zoom on;
+grid on;
+plot(tempo,Ia_1_10);
+plot(tempo,Ib_1_10);
+plot(tempo,Ic_1_10);
+legend('iA','iB', 'iC');
+title(["Correntes de linha das três fases na barra 10"]);
+ylabel("Corrente [A]");
+xlabel("Tempo (s)");
+
+figure;
+grid on;
+plot(tempo,iNeutro);
+title(["Correntes de neutro barra 10"]);
+ylabel("Corrente [A]");
+xlabel("Tempo (s)");
+
+
+figure;
+hold on;
+zoom on;
+grid on;
+plot(tempo,Ia_1_10);
+plot(tempo,Ia_1_10_f);
+legend('Normal','Filtrado');
+title(["Corrente de linha da fase A na barra 10 após filtragem analógica"]);
+ylabel("Corrente [A]");
+xlabel("Tempo (s)");
+
+figure;
 hold on;
 zoom on;
 grid on;
 plot(tempo,Ia_1_10_f);
 plot(tempo,ia_fasores);
 
-plot([instante_de_percepcao, instante_de_percepcao], ylim, 'black--');
-plot([instante_do_trip, instante_do_trip], ylim, 'r--');
+plot([instante_de_percepcao_a, instante_de_percepcao_a], ylim, 'black--');
+plot([instante_do_trip_a, instante_do_trip_a], ylim, 'r--');
 
 title(["Atuação da função de proteção implementada"]);
 legend('sinal analógico iA_{10}', 'módulo dos fasores IA_{10}', 'instante de percepção da falta','instante do trip');
 ylabel("Corrente [A]");
 xlabel("Tempo (s)");
 
+figure;
+hold on;
+zoom on;
+grid on;
+plot(tempo,Ia_1_10_f);
+plot(tempo,ia_fasores);
+
+plot([instante_de_percepcao_a, instante_de_percepcao_a], ylim, 'black--');
+plot([instante_do_trip_a, instante_do_trip_a], ylim, 'r--');
+
+title(["Atuação da função de proteção implementada"]);
+legend('sinal analógico iA_{10}', 'módulo dos fasores IA_{10}', 'instante de percepção da falta','instante do trip');
+ylabel("Corrente [A]");
+xlabel("Tempo (s)");
+
+figure;
+hold on;
+zoom on;
+grid on;
+plot(tempo,Ib_1_10_f);
+plot(tempo,ib_fasores);
+
+plot([instante_de_percepcao_b, instante_de_percepcao_b], ylim, 'black--');
+plot([instante_do_trip_b, instante_do_trip_b], ylim, 'r--');
+
+title(["Atuação da função de proteção implementada"]);
+legend('sinal analógico iB_{10}', 'módulo dos fasores IB_{10}', 'instante de percepção da falta','instante do trip');
+ylabel("Corrente [A]");
+xlabel("Tempo (s)");
+
+figure;
+hold on;
+zoom on;
+grid on;
+plot(tempo,Ic_1_10_f);
+plot(tempo,ic_fasores);
+
+plot([instante_de_percepcao_c, instante_de_percepcao_c], ylim, 'black--');
+plot([instante_do_trip_c, instante_do_trip_c], ylim, 'r--');
+
+title(["Atuação da função de proteção implementada"]);
+legend('sinal analógico iC_{10}', 'módulo dos fasores IA_{10}', 'instante de percepção da falta','instante do trip');
+ylabel("Corrente [A]");
+xlabel("Tempo (s)");
+
+
+figure;
+subplot(2, 2, 1);
+hold on;
+plot(tempo, sinal_trip_a,'b');
+plot([instante_do_trip_a, instante_do_trip_a], ylim, 'r--');
+title(["Atuação do Relé para fase A"]);
+ylabel("Nível");
+xlabel("Tempo [s]");
+legend('Nível do sinal de trip', 'Instante de atuação');
+grid;
+
+subplot(2, 2, 2);
+hold on;
+plot(tempo, sinal_trip_b,'b');
+plot([instante_do_trip_b, instante_do_trip_b], ylim, 'r--');
+title(["Atuação do Relé para fase B"]);
+ylabel("Nível");
+xlabel("Tempo [s]");
+legend('Nível do sinal de trip', 'Instante de atuação');
+grid;
+
+subplot(2, 2, 3);
+hold on;
+plot(tempo, sinal_trip_c,'b');
+plot([instante_do_trip_c, instante_do_trip_c], ylim, 'r--');
+title(["Atuação do Relé para fase C"]);
+ylabel("Nível");
+xlabel("Tempo [s]");
+legend('Nível do sinal de trip', 'Instante de atuação');
+grid;
+
+subplot(2, 2, 4);
+hold on;
+plot(tempo, sinal_trip_n,'b');
+plot([instante_do_trip_n, instante_do_trip_n], ylim, 'r--');
+title(["Atuação do Relé para o neutro"]);
+ylabel("Nível");
+xlabel("Tempo [s]");
+legend('Nível do sinal de trip', 'Instante de atuação');
+grid;
