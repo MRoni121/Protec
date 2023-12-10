@@ -103,7 +103,8 @@ plot(tempo,Ib_1_10);
 plot(tempo,Ic_1_10);
 legend('iA','iB', 'iC');
 title(["Correntes de linha das três fases na barra 10"]);
-
+ylabel("Corrente [A]");
+xlabel("Tempo (s)");
 
 figure(2)
 hold on;
@@ -113,7 +114,8 @@ plot(tempo,Ia_1_10);
 plot(tempo,Ia_1_10_f);
 legend('Normal','Filtrado');
 title(["Corrente de linha da fase A na barra 10 após filtragem analógica"]);
-
+ylabel("Corrente [A]");
+xlabel("Tempo (s)");
 
 
 %% ------------------------------------------------------------------------
@@ -128,9 +130,6 @@ ia_dig = zeros(1, tam_buffer);      % Buffer que armazena a referência o sinal 
 ib_dig = zeros(1, tam_buffer);      % Buffer que armazena a referência o sinal de corrente ib
 ic_dig = zeros(1, tam_buffer);      % Buffer que armazena a referência o sinal de corrente ic
 tempo_lido  = zeros(1, tam_buffer); % Buffer que armazena a referência de tempo
-corren_nova = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente digitalizado e filtrado
-tempo_novo  = zeros(1, tam_buffer); % Buffer que armazena a referência de tempo
-
 
 
 aux = 1;
@@ -146,7 +145,6 @@ deveria_atualizar = 1;
 ia_fasores = zeros(1, length(tempo));
 ib_fasores = zeros(1, length(tempo));
 ic_fasores = zeros(1, length(tempo));
-Ia_super_fasores = zeros(1, length(tempo));
 
 % % 5.2) Leitura dos ADs
 while aux<length(tempo)
@@ -221,5 +219,6 @@ plot([instante_do_trip, instante_do_trip], ylim, 'r--');
 
 title(["Atuação da função de proteção implementada"]);
 legend('sinal analógico iA_{10}', 'módulo dos fasores IA_{10}', 'instante de percepção da falta','instante do trip');
-
+ylabel("Corrente [A]");
+xlabel("Tempo (s)");
 
