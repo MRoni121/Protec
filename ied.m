@@ -12,51 +12,28 @@ fa            = 1920;               % Frequência de amostragem dos casos de sim
 num_ciclo     = fa/f;               % Número de amostras por ciclo (valor que pode ser fracionário)
 Ts            = 1/fa;               % Período de amostragem = Passo de integração do Simulink
 
-% parâmetros da função
-curve_family = 'ieee';  %iec ||ieee
-curve_type = 'mui_inv'; % ext_inv || mui_inv || mod_inv || short_inv || A || B || C
-ipk = 9.48125*80;
-mt = 0.2;
+% Parâmetros da função
+
 
 %% ------------------------------------------------------------------------
-% 3. Dados da simula��o
+% 3. Dados da simulação
 % -------------------------------------------------------------------------
 
-% Transformando cada arquivo csv em matriz
-
-sinais_1_10 = csvread('A1rele10.csv');
-sinais_1_20 = csvread('A1rele20.csv');
-sinais_1_30 = csvread('A1rele30.csv');
-sinais_2_10 = csvread('A2rele10.csv');
-sinais_2_20 = csvread('A2rele20.csv');
-sinais_2_30 = csvread('A2rele30.csv');
+ABC002_RED;
 
 % Criando os vetores de tempo e corrente
 
-tempo = sinais_1_10(1:end, 1);
-Ia_1_10 = sinais_1_10(1:end, 2);
-Ib_1_10 = sinais_1_10(1:end, 3);
-Ic_1_10 = sinais_1_10(1:end, 4);
-Ia_1_20 = sinais_1_20(1:end, 2);
-Ib_1_20 = sinais_1_20(1:end, 3);
-Ic_1_20 = sinais_1_20(1:end, 4);
-Ia_1_30 = sinais_1_30(1:end, 2);
-Ib_1_30 = sinais_1_30(1:end, 3);
-Ic_1_30 = sinais_1_30(1:end, 4);
-Ia_2_10 = sinais_2_10(1:end, 2);
-Ib_2_10 = sinais_2_10(1:end, 3);
-Ic_2_10 = sinais_2_10(1:end, 4);
-Ia_2_20 = sinais_2_20(1:end, 2);
-Ib_2_20 = sinais_2_20(1:end, 3);
-Ic_2_20 = sinais_2_20(1:end, 4);
-Ia_2_30 = sinais_2_30(1:end, 2);
-Ib_2_30 = sinais_2_30(1:end, 3);
-Ic_2_30 = sinais_2_30(1:end, 4);
+tempo = matriz(1:end, 1);
+Ia_local = matriz(1:end, 2);
+Ib_local = matriz(1:end, 3);
+Ic_local = matriz(1:end, 4);
+Ia_remoto = matriz(1:end, 5);
+Ib_remoto = matriz(1:end, 6);
+Ic_remoto = matriz(1:end, 7);
 
 for k = 1:length(tempo)
   tempo(k) = (k-1)*Ts;
 end
-
 
 
 %% ------------------------------------------------------------------------
@@ -74,24 +51,12 @@ Amin   = 32;       % Atenuacao fora da banda de passagem, [dB]
 % 4.2) Efetua a filtragem dos sinais
 % -------------------------------------------------------------------------
 
-Ia_1_10_f = Filtro_Analogico(1, Ia_1_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-Ib_1_10_f = Filtro_Analogico(1, Ib_1_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-Ic_1_10_f = Filtro_Analogico(1, Ic_1_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-Ia_1_20_f = Filtro_Analogico(1, Ia_1_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-Ib_1_20_f = Filtro_Analogico(1, Ib_1_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-Ic_1_20_f = Filtro_Analogico(1, Ic_1_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-Ia_1_30_f = Filtro_Analogico(1, Ia_1_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-Ib_1_30_f = Filtro_Analogico(1, Ib_1_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-Ic_1_30_f = Filtro_Analogico(1, Ic_1_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-Ia_2_10_f = Filtro_Analogico(1, Ia_2_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-Ib_2_10_f = Filtro_Analogico(1, Ib_2_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-Ic_2_10_f = Filtro_Analogico(1, Ic_2_10, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-Ia_2_20_f = Filtro_Analogico(1, Ia_2_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-Ib_2_20_f = Filtro_Analogico(1, Ib_2_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-Ic_2_20_f = Filtro_Analogico(1, Ic_2_20, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-Ia_2_30_f = Filtro_Analogico(1, Ia_2_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-Ib_2_30_f = Filtro_Analogico(1, Ib_2_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
-Ic_2_30_f = Filtro_Analogico(1, Ic_2_30, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ia_local_f = Filtro_Analogico(1, Ia_local, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_local_f = Filtro_Analogico(1, Ib_local, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_local_f = Filtro_Analogico(1, Ic_local, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ia_remoto_f = Filtro_Analogico(1, Ia_remoto, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ib_remoto_f = Filtro_Analogico(1, Ib_remoto, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
+Ic_remoto_f = Filtro_Analogico(1, Ic_remoto, tempo, 2*pi*fp, 2*pi*fs, Amin, Amax);
 
 
 figure(1)
@@ -117,19 +82,20 @@ title(["Corrente de linha da fase A na barra 10 após filtragem analógica"]);
 
 
 %% ------------------------------------------------------------------------
-% 5) Calculo da protecao de sobrecorrente
+% 5) Calculo da protecao diferencial
 % -------------------------------------------------------------------------
 
 % 5.1) Implementação do buffer circular
 
-tam_buffer  = 64;                   % Tamanho do buffer, em numero de amostras
-ponteiro_b = 1;                     % Ponteiro que é atualizado a cada posição de leitura
-ia_dig = zeros(1, tam_buffer);      % Buffer que armazena a referência o sinal de corrente ia
-ib_dig = zeros(1, tam_buffer);      % Buffer que armazena a referência o sinal de corrente ib
-ic_dig = zeros(1, tam_buffer);      % Buffer que armazena a referência o sinal de corrente ic
-tempo_lido  = zeros(1, tam_buffer); % Buffer que armazena a referência de tempo
-corren_nova = zeros(1, tam_buffer); % Buffer que armazena a referência o sinal de corrente digitalizado e filtrado
-tempo_novo  = zeros(1, tam_buffer); % Buffer que armazena a referência de tempo
+tam_buffer  = 64;                          % Tamanho do buffer, em numero de amostras
+ponteiro_b = 1;                            % Ponteiro que é atualizado a cada posição de leitura
+ia_local_dig = zeros(1, tam_buffer);       % Buffer que armazena a referência o sinal de corrente ia local
+ib_local_dig = zeros(1, tam_buffer);       % Buffer que armazena a referência o sinal de corrente ib local
+ic_local_dig = zeros(1, tam_buffer);       % Buffer que armazena a referência o sinal de corrente ic local
+ia_remoto_dig = zeros(1, tam_buffer);      % Buffer que armazena a referência o sinal de corrente ia remoto
+ib_remoto_dig = zeros(1, tam_buffer);      % Buffer que armazena a referência o sinal de corrente ib remoto
+ic_remoto_dig = zeros(1, tam_buffer);      % Buffer que armazena a referência o sinal de corrente ic remoto
+tempo_lido  = zeros(1, tam_buffer);        % Buffer que armazena a referência de tempo
 
 
 
@@ -143,38 +109,47 @@ instante_de_percepcao = 0;
 tempo_pro_trip_estimado = 0;
 deveria_atualizar = 1;
 
-ia_fasores = zeros(1, length(tempo));
-ib_fasores = zeros(1, length(tempo));
-ic_fasores = zeros(1, length(tempo));
-Ia_super_fasores = zeros(1, length(tempo));
+ia_fasores_local = zeros(1, length(tempo));
+ib_fasores_local = zeros(1, length(tempo));
+ic_fasores_local = zeros(1, length(tempo));
+ia_fasores_remoto = zeros(1, length(tempo));
+ib_fasores_remoto = zeros(1, length(tempo));
+ic_fasores_remoto = zeros(1, length(tempo));
 
 % % 5.2) Leitura dos ADs
 while aux<length(tempo)
 
 %   5.2.3) Atualização dos buffers circulares
-    ia_dig(ponteiro_b) = Ia_1_10_f(aux);
-    ib_dig(ponteiro_b) = Ib_1_10_f(aux);
-    ic_dig(ponteiro_b) = Ic_1_10_f(aux);
-    tempo_lido(ponteiro_b)  = tempo(aux);  % Atualização do buffer de tempo
+    ia_local_dig(ponteiro_b) = Ia_local_f(aux);
+    ib_local_dig(ponteiro_b) = Ib_local_f(aux);
+    ic_local_dig(ponteiro_b) = Ic_local_f(aux);
+    ia_remoto_dig(ponteiro_b) = Ia_remoto_f(aux);
+    ib_remoto_dig(ponteiro_b) = Ib_remoto_f(aux);
+    ic_remoto_dig(ponteiro_b) = Ic_remoto_f(aux);
+    tempo_lido(ponteiro_b)  = tempo(aux); 
 
 
 %   5.2.4) Cálculo dos fasores
-    ia_ordenada = [ia_dig(ponteiro_b:tam_buffer) ia_dig(1:ponteiro_b-1)];
-    ib_ordenada = [ib_dig(ponteiro_b:tam_buffer) ib_dig(1:ponteiro_b-1)];
-    ic_ordenada = [ic_dig(ponteiro_b:tam_buffer) ic_dig(1:ponteiro_b-1)];
+    ia_local_ordenada = [ia_local_dig(ponteiro_b:tam_buffer) ia_local_dig(1:ponteiro_b-1)];
+    ib_local_ordenada = [ib_local_dig(ponteiro_b:tam_buffer) ib_local_dig(1:ponteiro_b-1)];
+    ic_local_ordenada = [ic_local_dig(ponteiro_b:tam_buffer) ic_local_dig(1:ponteiro_b-1)];
+    ia_remoto_ordenada = [ia_remoto_dig(ponteiro_b:tam_buffer) ia_remoto_dig(1:ponteiro_b-1)];
+    ib_remoto_ordenada = [ib_remoto_dig(ponteiro_b:tam_buffer) ib_remoto_dig(1:ponteiro_b-1)];
+    ic_remoto_ordenada = [ic_remoto_dig(ponteiro_b:tam_buffer) ic_remoto_dig(1:ponteiro_b-1)];
 
-    ia_fasores(aux) = fourier(ia_ordenada, tam_buffer, fa, f).magnitude;
-    ib_fasores(aux) = fourier(ib_ordenada, tam_buffer, fa, f).magnitude;
-    ic_fasores(aux) = fourier(ic_ordenada, tam_buffer, fa, f).magnitude;
-
-    Ia_super_fasores(aux) = fourier(Ia_1_10_f, aux, fa, f).magnitude;
+    ia_local_fasores(aux) = fourier(ia_local_ordenada, tam_buffer, fa, f).magnitude;
+    ib_local_fasores(aux) = fourier(ib_local_ordenada, tam_buffer, fa, f).magnitude;
+    ic_local_fasores(aux) = fourier(ic_local_ordenada, tam_buffer, fa, f).magnitude;
+    ia_remoto_fasores(aux) = fourier(ia_remoto_ordenada, tam_buffer, fa, f).magnitude;
+    ib_remoto_fasores(aux) = fourier(ib_remoto_ordenada, tam_buffer, fa, f).magnitude;
+    ic_remoto_fasores(aux) = fourier(ic_remoto_ordenada, tam_buffer, fa, f).magnitude;
 
 
 %   5.2.5) Cálculo do menor tempo de atuação dentre os três fasores
     array_tempos = [
-        Protecao(curve_family, curve_type, ipk, mt, ia_fasores(aux)) 
-        Protecao(curve_family, curve_type, ipk, mt, ib_fasores(aux)) 
-        Protecao(curve_family, curve_type, ipk, mt, ic_fasores(aux))
+        Protecao(curve_family, curve_type, ipk, mt, ia_local_fasores(aux)) 
+        Protecao(curve_family, curve_type, ipk, mt, ib_local_fasores(aux)) 
+        Protecao(curve_family, curve_type, ipk, mt, ic_local_fasores(aux))
     ];
     
     tempo_pro_trip = min(array_tempos(array_tempos > 0));
